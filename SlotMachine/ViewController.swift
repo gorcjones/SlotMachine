@@ -93,6 +93,11 @@ class ViewController: UIViewController {
         slots = Factory.createSlots()
         println("SlotsCount \(slots.count)")
         setupSecondContainer(self.secondContainer)
+        var winningsMultiplier = SlotBrain.computeWinnings(slots)
+        winnings = winningsMultiplier * currentBet
+        credits += winnings
+        currentBet = 0
+        updateMainView()
     }
     
     func betMaxButtonPressed(button: UIButton) {
