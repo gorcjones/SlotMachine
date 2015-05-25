@@ -31,6 +31,13 @@ class ViewController: UIViewController {
     var betMaxButton: UIButton!
     var spinButton: UIButton!
     
+    var slots: [[Slot]] = []
+    
+    // Stats
+    var credits = 0
+    var currentBet = 0
+    var winnings = 0
+    
     let kNumberOfContainers = 3
     let kNumberOfSlots = 3
     
@@ -49,9 +56,10 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         self.setupContainerViews()
         self.setupFirstContainer(self.firstContainer)
-        self.setupSecondContainer(self.secondContainer)
+ //       self.setupSecondContainer(self.secondContainer)
         self.setupThirdContainer(self.thirdContainer)
         self.setupFourthContainer(self.fourthContainer)
+        hardReset()
     }
 
     override func didReceiveMemoryWarning() {
@@ -61,16 +69,22 @@ class ViewController: UIViewController {
     
     //IBActions
     func resetButtonPressed(button: UIButton) {
-        println("resetButtonPressed")
+        hardReset()
     }
+    
     func betOneButtonPressed(button: UIButton) {
-        println(button)
+
     }
+    
     func spinButtonPressed(button: UIButton) {
-        println(button)
+        removeSlotImageViews()
+        slots = Factory.createSlots()
+        println("SlotsCount \(slots.count)")
+        setupSecondContainer(self.secondContainer)
     }
+    
     func betMaxButtonPressed(button: UIButton) {
-        println(button)
+
     }
     
     
@@ -104,12 +118,28 @@ class ViewController: UIViewController {
         for var containerNumber = 0; containerNumber < kNumberOfContainers; ++containerNumber {
             for var slotNumber = 0; slotNumber < kNumberOfSlots; ++slotNumber {
                 var slotImageView = UIImageView()
+                var slot:Slot
+                if slots.count != 0 {
+//                    println("IfSlotsCount \(slots.count)")
+                    let slotContainer = slots[containerNumber]
+//                    println("SlotsContainerNumber \(slots[containerNumber])")
+                    slot = slotContainer[slotNumber]
+//                    println("slotNumber \(slotContainer[slotNumber])")
+                    slotImageView.image = slot.image
+                }
+                else {
+//                    println("ElsePrintSlotsCount \(slots.count)")
+                    slotImageView.image = UIImage(named: "Ace")
+                }
                 slotImageView.backgroundColor = UIColor.yellowColor()
                 slotImageView.frame = CGRect(x: containerView.bounds.origin.x + (containerView.bounds.size.width * CGFloat(containerNumber) * kThird), y: containerView.bounds.origin.y + (containerView.bounds.size.height * CGFloat(slotNumber) * kThird), width: containerView.bounds.width * kThird - kMarginForSlot, height: containerView.bounds.height * kThird - kMarginForSlot)
                 containerView.addSubview(slotImageView)
             }
         }
     }
+    
+    
+    
     func setupThirdContainer(containerView: UIView) {
         self.creditsLabel = UILabel()
         self.creditsLabel.text = "000000"
@@ -210,6 +240,24 @@ class ViewController: UIViewController {
         
     }
     
+    func removeSlotImageViews () {
+        if self.secondContainer != nil {
+            let container: UIView? = self.secondContainer
+            let subViews:Array? = container!.subviews
+            for view in subViews! {
+                view.removeFromSuperview()
+            }
+        }
+    }
+    
+    func hardReset() {
+        removeSlotImageViews()
+        slots.removeAll(keepCapacity: true)
+        self.setupSecondContainer(self.secondContainer)
+        credits = 50
+        winnings = 0
+        currentBet = 0
+    }
 
 
 }
